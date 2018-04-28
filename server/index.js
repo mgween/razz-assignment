@@ -5,8 +5,8 @@ const bodyParser = require('body-parser');
 const mongo = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
-const cors = require('cors')
-app.use(cors());
+// const cors = require('cors')
+// app.use(cors());
 
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(bodyParser.json());
