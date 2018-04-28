@@ -1,111 +1,68 @@
 <template>
-  <div v-if="activeUser" id="app">
+  <div id="app">
     <div class="top-bar">
       <img src="http://via.placeholder.com/250x75" alt="logo">
       <div style="display: flex">
-        <button class="button" @click="loginForm.visible = !loginForm.visible">Login / Register</button>
+        <button @click="loginFormVisible = !loginFormVisible" class="button login-button">Login / Register</button>
         <div v-if="activeUser !== 'default'" class="user">
           <font-awesome-icon :icon="icons.user" size="2x" />
           {{ activeUser }}
         </div>
       </div>
     </div>
-    <div v-if="loginForm.visible" class="login-menu">
-      <input v-model="loginForm.username" @keyup.enter="doLogin" autofocus placeholder="Username">
-      <input v-model="loginForm.password" @keyup.enter="doLogin" placeholder="Password" type="password">
-      <div v-if="loginForm.responseText"style="color: red">{{ loginForm.responseText }}</div>
-      <button @click="doLogin" :disabled="formIncomplete" :class="{'disabled-button': formIncomplete}" class="button">Login ></button>
-      <button @click="addUser" :disabled="formIncomplete" :class="{'disabled-button': formIncomplete}" class="button">Register ></button>
+    <div v-if="loginFormVisible" class="login-menu-container">
+      <login-form @login-data="assignLoginData($event)" />
     </div>
     <div @click="$router.push('/prizes')" class="header">
       <h1>Rewards</h1>
     </div>
-    <div class="router-container">
+    <div v-if="activeUser" class="router-container">
       <router-view />
     </div>
     <div class="footer">
-      Terms & Conditions | Privacy Policy
+      <span>Terms & Conditions | </span><span>Privacy Policy</span>
     </div>
   </div>
 </template>
 
 <script>
 import faUser from '@fortawesome/fontawesome-free-solid/faUser';
+import LoginForm from '@/components/LoginForm';
 
 export default {
   name: 'App',
+  components: { 'login-form': LoginForm },
   data() {
     return {
       connectedToDb: false,
-      loginForm: {
-        visible: false,
-        username: 'default',
-        password: 'default',
-        responseText: null
-      },
+      loginFormVisible: false,
       activeUser: null,
       icons: {
         user: faUser
       }
     }
   },
-  computed: {
-    formIncomplete() {
-      return !this.loginForm.username || !this.loginForm.password;
-    }
-  },
   methods: {
-    doLogin() {
-      fetch(`${this.server}/login`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          user: this.loginForm.username,
-          password: this.loginForm.password
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.ok) {
-          this.activeUser = data.user;
-          this.loginForm.visible = false;
-          this.loginForm.username = '';
-          this.loginForm.password = '';
-        } else if (data.user === 'AuthenticationFailed') {
-          this.loginForm.responseText = 'Invalid username / password';
-        } else {
-          this.loginForm.responseText = 'Something went wrong.'
-        }
-      });
-    },
-    addUser() {
-      fetch(`${this.server}/new-user`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          user: this.loginForm.username,
-          password: this.loginForm.password
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        if (data.user) {
-          this.loginForm.responseText = `User ${data.user} has been created.`;
-        } else if (data.codeName === 'DuplicateKey') {
-          this.loginForm.responseText = 'Username already in use.';
-        } else {
-          this.loginForm.responseText = 'Something went wrong.';
-        };
-      });
+    assignLoginData(data) {
+      this.activeUser = data.user;
+      this.loginFormVisible = false;
     }
   },
   created() {
-    this.doLogin();
+    fetch(`${this.server}/login`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        user: 'default',
+        password: 'default'
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      this.assignLoginData(data);
+    });
   }
 }
 </script>
@@ -113,7 +70,16 @@ export default {
 <style lang="css">
 @font-face {
   font-family: Quicksand;
-  src: url('/static/font/Quicksand-Regular.ttf');
+  src: url('/static/font/Quicksand-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  /* src: url('/static/font/Quicksand-Bold.ttf'); */
+}
+@font-face {
+  font-family: Quicksand;
+  src: url('/static/font/Quicksand-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
 body {
   font-family: 'Quicksand';
@@ -122,7 +88,7 @@ body {
 .button {
   background: #ffce0a;
   padding: 0.75rem 3rem;
-  border-radius: 2rem;
+  border-radius: 1.5rem;
   text-decoration: none;
   color: black;
   border: none;
@@ -145,16 +111,10 @@ body {
 .user > svg {
   margin: 0 1rem;
 }
-.login-menu {
+.login-menu-container {
   position: absolute;
   right: 0.5rem;
-  background: white;
-  display: flex;
-  flex-direction: column;
   margin-top: -1rem;
-}
-.login-menu > * {
-  margin: 0.5rem;
 }
 .header {
   text-align: center;
@@ -163,6 +123,9 @@ body {
   color: white;
   text-decoration: none;
   cursor: pointer;
+}
+.header > h1 {
+  font-weight: bold;
 }
 .router-container {
   padding: 1rem 0;
@@ -182,10 +145,21 @@ body {
   .user > svg {
     margin: 0;
   }
+  .login-button {
+    padding: 1rem;
+  }
 }
 @media screen and (max-width: 375px) {
   .user {
     word-break: break-all;
+  }
+  .login-button {
+    padding: 1rem 0;
+  }
+}
+@media screen and (min-width: 1440px) {
+  #app {
+    margin: 0 15vw;
   }
 }
 </style>

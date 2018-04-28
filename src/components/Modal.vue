@@ -48,11 +48,15 @@ export default {
       .then(response => response.json())
       .then(data => {
         if (data.ok) {
-          this.stage++;
+          if (data.nModified === 1) {
+            this.stage++;
+          } else {
+            this.responseMsg = 'Sorry. This item is sold out.'
+          }
         } else if (data.codeName === 'Unauthorized') {
           this.responseMsg = 'You must be logged in to redeem a prize.';
         } else {
-          this.responeMsg = 'Something went wrong.'
+          this.responseMsg = 'Something went wrong.'
         };
       });
     }

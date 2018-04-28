@@ -5,17 +5,20 @@ const bodyParser = require('body-parser');
 const mongo = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
-// const cors = require('cors')
-// app.use(cors());
+// Only necessary for dev builds
+const cors = require('cors');
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, '../dist')));
+app.set('views', path.join(__dirname, '../dist'));
 app.use(bodyParser.json());
-app.set('views', path.join(__dirname, '../dist'))
+
 app.get('/', (req, res) => {
   res.render('../dist/index.html');
 });
 
 let db;
+
 app.post('/login', (req, res) => {
   mongo.connect('mongodb://ds159129.mlab.com:59129/razz', {
     auth: {
@@ -47,33 +50,24 @@ app.get('/prize', (req, res) => {
   .toArray((err, result) => {
     res.send(result);
   });
-
-  // db.collection('prizes')
-  // .watch({ $match: { _id: ObjectId(req.query.prizeId) } })
-  // .next((err, next) => {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     console.log(next);
-  //   }
-  // })
 });
 
 app.post('/redeem-prize', (req, res) => {
-  if (req.body.quantity > 0) {
-    db.collection('prizes')
-    .updateOne(
-      { _id: ObjectId(req.body.prizeId) },
-      { $inc: { quantity: -1} },
-      (err, result) => {
-        if (err) {
-          res.send(err);
-        } else {
-          res.send(result);
-        };
-      }
-    );
-  }
+  db.collection('prizes')
+  .updateOne(
+    {
+      _id: ObjectId(req.body.prizeId),
+      quantity: { $gt: 0 }
+    },
+    { $inc: { quantity: -1} },
+    (err, result) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(result);
+      };
+    }
+  );
 });
 
 app.post('/new-user', (req, res) => {

@@ -1,18 +1,18 @@
 <template lang="html">
-<div class="component">
-  <h2>Here is the full list of prizes that you can win.</h2>
-  <div class="prize-list">
-    <div v-for="prize in prizeList" class="prize">
-      <img :src="prize.image_url" :alt="prize.name">
-      <div class="prize-info">
-        <div style="font-size: 1.5em">Win a {{ prize.name }}</div>
-        <div>
-          <router-link :to="`/details/${prize._id}`" class="button">Redeem ></router-link>
+  <div class="component">
+    <h2>Here is the full list of prizes that you can win.</h2>
+    <div class="prize-list">
+      <div v-for="prize in prizeList" class="prize">
+        <img :src="prize.image_url" :alt="prize.name">
+        <div class="prize-info">
+          <div class="prize-text">Win a {{ prize.name }}</div>
+          <div>
+            <router-link :to="`/details/${prize._id}`" class="button">Redeem ></router-link>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -34,6 +34,7 @@ export default {
 <style lang="css" scoped>
 h2 {
   margin: 4rem 0;
+  font-weight: normal;
 }
 .component {
   display: flex;
@@ -58,6 +59,10 @@ h2 {
 }
 .prize-info > * {
   margin: 3rem 0;
+}
+.prize-text {
+  font-size: 1.2em;
+  font-weight: bold;
 }
 @media screen and (max-width: 768px) {
   .prize-list {
