@@ -34,7 +34,13 @@ export default {
     const prizeId = encodeURI(this.$route.params.prize);
     fetch(`${this.server}/prize?prizeId=${prizeId}`)
     .then(response => response.json())
-    .then(data => this.prize = data);
+    .then(data => {
+      this.prize = data;
+      this.$emit('show-footer');
+    });
+  },
+  destroyed() {
+    this.$emit('hide-footer');
   }
 }
 </script>

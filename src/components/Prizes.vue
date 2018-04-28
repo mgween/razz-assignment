@@ -26,7 +26,13 @@ export default {
   created() {
     fetch(`${this.server}/prize-list`)
     .then(response => response.json())
-    .then(data => this.prizeList = data);
+    .then(data => {
+      this.prizeList = data;
+      this.$emit('show-footer');
+    });
+  },
+  destroyed() {
+    this.$emit('hide-footer');
   }
 }
 </script>

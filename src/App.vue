@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="top-bar">
-      <img src="http://via.placeholder.com/250x75" alt="logo">
+      <img src="https://via.placeholder.com/250x75" alt="logo">
       <div v-if="activeUser === 'default' || activeUser === null">
         <button @click="loginFormVisible = !loginFormVisible" class="button login-button">Login / Register</button>
       </div>
@@ -18,9 +18,9 @@
       <h1>Rewards</h1>
     </div>
     <div v-if="activeUser" class="router-container">
-      <router-view />
+      <router-view @show-footer="footerVisible = true" @hide-footer="footerVisible = false" />
     </div>
-    <div class="footer">
+    <div v-if="footerVisible" class="footer">
       <span>Terms & Conditions | </span><span>Privacy Policy</span>
     </div>
   </div>
@@ -38,6 +38,7 @@ export default {
       connectedToDb: false,
       loginFormVisible: false,
       activeUser: null,
+      footerVisible: false,
       icons: {
         user: faUser
       }
