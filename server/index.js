@@ -6,12 +6,12 @@ const mongo = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
 // Only necessary for dev builds
-const cors = require('cors');
-app.use(cors());
+// const cors = require('cors');
+// app.use(cors());
 
 app.use(express.static(path.join(__dirname, '../dist')));
-app.set('views', path.join(__dirname, '../dist'));
 app.use(bodyParser.json());
+app.set('views', path.join(__dirname, '../dist'));
 
 app.get('/', (req, res) => {
   res.render('../dist/index.html');

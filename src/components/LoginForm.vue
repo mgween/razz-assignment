@@ -38,7 +38,7 @@ export default {
       .then(response => response.json())
       .then(data => {
         if (data.ok) {
-          this.$emit('login-data', data);
+          this.$emit('login-data', data.user);
           this.username = '';
           this.password = '';
         } else if (data.user === 'AuthenticationFailed') {
