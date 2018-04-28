@@ -2,12 +2,13 @@
   <div id="app">
     <div class="top-bar">
       <img src="http://via.placeholder.com/250x75" alt="logo">
-      <div style="display: flex">
+      <div v-if="activeUser === 'default' || activeUser === null">
         <button @click="loginFormVisible = !loginFormVisible" class="button login-button">Login / Register</button>
-        <div v-if="activeUser !== 'default'" class="user">
-          <font-awesome-icon :icon="icons.user" size="2x" />
-          {{ activeUser }}
-        </div>
+      </div>
+      <div v-else class="user">
+        <button @click="useDefaultUser" class="button">Logout</button>
+        <font-awesome-icon :icon="icons.user" size="2x" />
+        {{ activeUser }}
       </div>
     </div>
     <div v-if="loginFormVisible" class="login-menu-container">
@@ -46,23 +47,26 @@ export default {
     assignLoginData(data) {
       this.activeUser = data.user;
       this.loginFormVisible = false;
+    },
+    useDefaultUser() {
+      fetch(`${this.server}/login`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          user: 'default',
+          password: 'default'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        this.assignLoginData(data);
+      });
     }
   },
   created() {
-    fetch(`${this.server}/login`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        user: 'default',
-        password: 'default'
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      this.assignLoginData(data);
-    });
+    this.useDefaultUser();
   }
 }
 </script>
@@ -73,7 +77,6 @@ export default {
   src: url('/static/font/Quicksand-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-  /* src: url('/static/font/Quicksand-Bold.ttf'); */
 }
 @font-face {
   font-family: Quicksand;
@@ -83,7 +86,7 @@ export default {
 }
 body {
   font-family: 'Quicksand';
-  background: #f5f5f5;
+  background: #eaeaea;
 }
 .button {
   background: #ffce0a;

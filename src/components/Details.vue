@@ -34,7 +34,7 @@ export default {
     const prizeId = encodeURI(this.$route.params.prize);
     fetch(`${this.server}/prize?prizeId=${prizeId}`)
     .then(response => response.json())
-    .then(data => this.prize = data[0]);
+    .then(data => this.prize = data);
   }
 }
 </script>

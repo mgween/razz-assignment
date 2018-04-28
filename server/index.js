@@ -4,13 +4,12 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const mongo = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
+const cors = require('cors');
 
-// Only necessary for dev builds
-// const cors = require('cors');
-// app.use(cors());
+app.use(cors());
+app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, '../dist')));
-app.use(bodyParser.json());
 app.set('views', path.join(__dirname, '../dist'));
 
 app.get('/', (req, res) => {
@@ -46,10 +45,13 @@ app.get('/prize-list', (req, res) => {
 
 app.get('/prize', (req, res) => {
   db.collection('prizes')
-  .find({ _id: ObjectId(req.query.prizeId) })
-  .toArray((err, result) => {
-    res.send(result);
-  });
+  .findOne(
+    { _id: ObjectId(req.query.prizeId) },
+    (err, result) => {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
 });
 
 app.post('/redeem-prize', (req, res) => {

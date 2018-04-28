@@ -2,7 +2,7 @@
   <div class="login-menu">
     <input v-model="username" @keyup.enter="doLogin" autofocus placeholder="Username">
     <input v-model="password" @keyup.enter="doLogin" placeholder="Password" type="password">
-    <div v-if="responseText"style="color: red">{{ responseText }}</div>
+    <div v-if="responseText" style="text-align:center">{{ responseText }}</div>
     <button @click="doLogin" :disabled="formIncomplete" :class="{'disabled-button': formIncomplete}" class="button">Login ></button>
     <button @click="addUser" :disabled="formIncomplete" :class="{'disabled-button': formIncomplete}" class="button">Register ></button>
   </div>
@@ -38,7 +38,7 @@ export default {
       .then(response => response.json())
       .then(data => {
         if (data.ok) {
-          this.$emit('login-data', data.user);
+          this.$emit('login-data', data);
           this.username = '';
           this.password = '';
         } else if (data.user === 'AuthenticationFailed') {
@@ -76,11 +76,13 @@ export default {
 
 <style lang="css" scoped>
 .login-menu {
-  background: white;
   display: flex;
   flex-direction: column;
+  width: 15rem;
+  background: white;
 }
 .login-menu > * {
+  padding: 0.75rem;
   margin: 0.5rem;
 }
 </style>

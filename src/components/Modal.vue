@@ -7,7 +7,7 @@
       <p>Redeem for {{ $props.prize.name }}?</p>
       <div v-if="responseMsg" style="color: red;">{{ responseMsg }}</div>
       <div>
-        <button @click="redeemPrize" class="button">Yes</button>
+        <button @click="redeemPrize" :disabled="$props.prize.quantity < 1" :class="{'disabled-button': $props.prize.quantity < 1}" class="button">Yes</button>
         <button @click="$emit('close-modal')" class="button cancel-button">Cancel</button>
       </div>
     </div>
@@ -51,7 +51,8 @@ export default {
           if (data.nModified === 1) {
             this.stage++;
           } else {
-            this.responseMsg = 'Sorry. This item is sold out.'
+            this.responseMsg = 'Sorry. This item is sold out.';
+            this.$props.prize.quantity = 0;
           }
         } else if (data.codeName === 'Unauthorized') {
           this.responseMsg = 'You must be logged in to redeem a prize.';
