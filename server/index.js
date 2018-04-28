@@ -10,6 +10,10 @@ const ObjectId = require('mongodb').ObjectId;
 
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(bodyParser.json());
+app.set('views', path.join(__dirname, '../dist'))
+app.get('/', (req, res) => {
+  res.render('../dist/index.html');
+});
 
 let db;
 app.post('/login', (req, res) => {
@@ -87,7 +91,7 @@ app.post('/new-user', (req, res) => {
   });
 });
 
-// const port = 3636;
-// app.listen(port, () => {
-//   console.log(`App running on port ${port}`);
-// });
+const port = process.env.PORT || 3636;
+app.listen(port, () => {
+  console.log(`App running on port ${port}`);
+});
