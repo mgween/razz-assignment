@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     doLogin() {
-      fetch(`http://localhost:3636/login`, {
+      fetch(`${this.server}/login`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
