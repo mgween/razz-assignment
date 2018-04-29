@@ -17,10 +17,15 @@
     <div @click="$router.push('/prizes')" class="header">
       <h1>Rewards</h1>
     </div>
-    <div v-if="activeUser" class="router-container">
-      <router-view @show-footer="footerVisible = true" @hide-footer="footerVisible = false" />
-    </div>
-    <div v-if="footerVisible" class="footer">
+    <transition name="fade" mode="out-in">
+      <div v-if="activeUser" key="loaded" class="router-container">
+        <router-view />
+      </div>
+      <div v-else key="loading" class="loading">
+        <span>Loading...</span>
+      </div>
+    </transition>
+    <div class="footer">
       <span>Terms & Conditions | </span><span>Privacy Policy</span>
     </div>
   </div>
@@ -38,7 +43,6 @@ export default {
       connectedToDb: false,
       loginFormVisible: false,
       activeUser: null,
-      footerVisible: false,
       icons: {
         user: faUser
       }
@@ -102,6 +106,22 @@ body {
   background: #e5e5e5;
   cursor: not-allowed;
 }
+.loading {
+  height: 60vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
 .top-bar {
   display: flex;
   justify-content: space-between;

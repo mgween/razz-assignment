@@ -1,20 +1,28 @@
 <template lang="html">
-  <div v-if="prize" class="component">
-    <div class="grid">
-      <img :src="prize.image_url" :alt="prize.name">
-      <div class="prize-form">
-        <h2>{{ prize.name }}</h2>
-        <button @click="modalDisplayed = true" :disabled="prize.quantity < 1" :class="{'disabled-button': prize.quantity < 1}" class="button">Redeem ></button>
-        <span>{{ prize.quantity }} left in stock</span>
+  <div class="component">
+    <transition name="fade" mode="out-in">
+      <div v-if="prize" key="prize">
+        <div class="grid">
+          <img :src="prize.image_url" :alt="prize.name">
+          <div class="prize-form">
+            <h2>{{ prize.name }}</h2>
+            <button @click="modalDisplayed = true" :disabled="prize.quantity < 1" :class="{'disabled-button': prize.quantity < 1}" class="button">Redeem ></button>
+            <span>{{ prize.quantity }} left in stock</span>
+          </div>
+          <div class="description">
+            <h3>Description</h3>
+            {{ prize.description }}
+          </div>
+        </div>
       </div>
-      <div class="description">
-        <h3>Description</h3>
-        {{ prize.description }}
+      <div v-else key="loading" class="loading">
+        <span>Loading...</span>
       </div>
-    </div>
+    </transition>
 
-    <modal v-if="modalDisplayed" :prize="prize" @close-modal="modalDisplayed = false" />
-
+    <transition name="fade">
+      <modal v-if="modalDisplayed" :prize="prize" @close-modal="modalDisplayed = false" />
+    </transition>
   </div>
 </template>
 
@@ -36,11 +44,7 @@ export default {
     .then(response => response.json())
     .then(data => {
       this.prize = data;
-      this.$emit('show-footer');
     });
-  },
-  destroyed() {
-    this.$emit('hide-footer');
   }
 }
 </script>
